@@ -35,6 +35,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    // Handles our custom ResourceNotFoundException (e.g., "User with ID 5 not
+    // found")
+    // This sends back a clean 404 response with the exact message we wrote in the
+    // service
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(), // ← uses the custom message: "User with ID X not found"
+                System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     // Handles manual exceptions thrown in the Service (e.g., "Email already
     // exists")
     @ExceptionHandler(ResponseStatusException.class)
