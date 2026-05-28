@@ -7,8 +7,5 @@ public record TaskResponseDTO(
         String title,
         String description,
         String status,
-        LocalDate dueDate,
-        Long userId) {}
-
-
-
+        LocalDate dueDate
+) {}

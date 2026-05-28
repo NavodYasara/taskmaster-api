@@ -1,12 +1,14 @@
 package com.taskmaster.api.service;
 
-import com.taskmaster.api.dto.TaskRegistrationDTO;
+import com.taskmaster.api.dto.TaskRequestDTO;
 import com.taskmaster.api.dto.TaskResponseDTO;
 import com.taskmaster.api.entity.TaskEntity;
 import com.taskmaster.api.entity.UserEntity;
 import com.taskmaster.api.exception.ResourceNotFoundException;
 import com.taskmaster.api.repository.TaskRepository;
 import com.taskmaster.api.repository.UserRepository;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,33 +22,40 @@ public class TaskService {
         this.userRepository = userRepository;
     }
 
-    public TaskResponseDTO createTask(TaskRegistrationDTO taskData) {
+    public TaskResponseDTO createTask(TaskRequestDTO taskRequest) {
+        //Fetch the currently authenticated user from SecurityContextHolder.
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        /*
+            Now we have know who is requesting to create a task, so we should create a task for that userId
+            We will use that useremail to find that user in our database and fetch the user id So , 
+            there will be no chance of creating a task for wrong userId If user is not found , then throw an exception.
+            For that we will use ResourceNotFoundException. If user is found , then create a task for that user
+        */
 
-        // Find User by ID using userRepository. Throw ResourceNotFoundException if empty.
-        UserEntity user = userRepository.findById(taskData.userId())
-        .orElseThrow(() -> new ResourceNotFoundException("User with ID " + taskData.userId() + " not found"));
+        UserEntity userObject = userRepository.findByEmail(userEmail).orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
+        
+        /*
+            Created an object from the TaskEntity.
+            Now test the incoming taskRequest details to the newly created object.
+        */
+        TaskEntity newTask = new TaskEntity();
+        newTask.setTitle(taskRequest.title());
+        newTask.setDescription(taskRequest.description());
+        newTask.setDueDate(taskRequest.dueDate());
+        newTask.setStatus("TODO");
+        newTask.setUser(userObject);
 
-        // Map TaskRegistrationDTO properties to a new TaskEntity.
-        TaskEntity task = new TaskEntity();
-        task.setTitle(taskData.title());
-        task.setDescription(taskData.description());
-        task.setStatus(taskData.status());
-        task.setDueDate(taskData.dueDate());
+        TaskEntity savedTask = taskRepository.save(newTask);
 
-        // Set the UserEntity into the TaskEntity.
-        task.setUser(user); // ← pass the whole UserEntity object (not just the ID number)
-
-        // Save TaskEntity via taskRepository.
-        TaskEntity savedTask = taskRepository.save(task);
-
-        // Map the saved TaskEntity back to a TaskResponseDTO and return it.
+    
         return new TaskResponseDTO(
-                savedTask.getId(),
-                savedTask.getTitle(),
-                savedTask.getDescription(),
-                savedTask.getStatus(),
-                savedTask.getDueDate(),
-                savedTask.getUser().getUserId()); // ← go through getUser() first, then getId()
+            savedTask.getId(),
+            savedTask.getTitle(),
+            savedTask.getDescription(),
+            savedTask.getStatus(),
+            savedTask.getDueDate()
+        );
     }
 
 }

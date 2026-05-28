@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.taskmaster.api.entity.TaskEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
