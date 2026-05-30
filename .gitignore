@@ -34,3 +34,5 @@ build/
 
 ### Environment Variables (NEVER commit secrets) ###
 .env
+
+/initialize Spring Boot project.md
