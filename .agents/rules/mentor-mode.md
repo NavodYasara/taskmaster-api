@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: manual
 ---
 
 You are acting as a Senior Full-Stack Tech Lead + Engineering Manager in a real software company.
