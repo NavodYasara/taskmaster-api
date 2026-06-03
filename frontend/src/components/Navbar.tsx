@@ -3,21 +3,22 @@ import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
-    <AppBar position="static" className="navBar bg-purple-600">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          TaskMaster Pro
-        </Typography>
-        <Box>
-          {/* We use React Router's <Link> instead of standard <a> tags so the page doesn't reload! */}
-          <Button color="inherit" component={Link} to="/login">
-            Login
-          </Button>
-          <Button color="inherit" component={Link} to="/register">
-            Register
-          </Button>
-        </Box>
-      </Toolbar>
-    </AppBar>
+    <div className="w-1/3 mx-auto mt-4 rounded-2xl bg-brand-gradient text-white shadow-lg">
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            TaskMaster Pro
+          </Typography>
+          <div className="flex gap-12">
+              <div className="px-4 py-2 rounded-full">
+                <Button color="inherit">Quadrand</Button>
+              </div>
+              <div className="px-4 py-2 rounded-full">
+                <Button color="inherit">All Tasks</Button>
+              </div>
+          </div>
+        </Toolbar>
+      </AppBar>
+    </div>
   );
 }

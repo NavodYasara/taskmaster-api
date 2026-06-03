@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Container,
   Card,
@@ -42,7 +43,7 @@ export default function Register() {
   };
 
   return (
-    <Box className=" layer_3 box flex-1 w-full flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-900 via-purple-800 to-violet-600">
+    <Box className="route_layer flex-1 flex w-full h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       <Container maxWidth="sm">
         <Card 
           elevation={0}
@@ -127,9 +128,12 @@ export default function Register() {
             <Box className="mt-6 text-center">
               <Typography variant="body2" className="text-gray-600">
                 Already have an account?{' '}
-                <a href="/login" className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors">
+                {/* <a href="/login" className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors">
                   Sign in here
-                </a>
+                </a> */}
+                <Link to="/login" className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors">
+                  Sign in here
+                </Link>
               </Typography>
             </Box>
           </Box>

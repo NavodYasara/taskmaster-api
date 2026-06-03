@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Typography, Card, CardContent, Stack } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent
+} from "@mui/material";
 
 // Define what a Task looks like in TypeScript (matches your Java DTO!)
 interface Task {
@@ -17,6 +22,7 @@ export default function Dashboard() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDuedate] = useState("");
+
 
   useEffect(() => {
     // 1. Get the token we saved during login
@@ -79,39 +85,46 @@ export default function Dashboard() {
   };
 
   return (
-    <Container className=" layer_routes mt-20">
-      <Typography variant="h4" className="mb-6 font-bold text-gray-800">
-        My Tasks
-      </Typography>
+    <Container className="layer_routes mt-10">
+      {/* 1. The Date Header Box */}
+      <div className="mb-6 inline-block border-2 border-gray-800 rounded-[2rem] px-8 py-3">
+        <Typography variant="body1" className="text-gray-500 font-medium">
+          Today
+        </Typography>
+        <Typography variant="body2" className="text-gray-400">
+          02/06/2026 Tuesday
+        </Typography>
+      </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> */}
+      {/* 2. The 2x2 Grid Container */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        {/* Box 1: To Do / Tasks */}
+        <div className="border-2 border-gray-800 rounded-3xl p-6 min-h-[300px]">
+          {tasks.length === 0 && (
+            <Typography className="text-gray-400">No tasks found. Create one!</Typography>
+          )}
+          {tasks.map((task) => (
+            <div key={task.id} className="mb-3 text-gray-400">
+              {task.title}
+            </div>
+          ))}
+        </div>
 
-      <Stack spacing={2} className="space-y-4">
-        {/* Loop through the tasks array and render a card for each one */}
-        {tasks.map((task) => (
-          <Card
-            key={task.id}
-            className="shadow-md border-t-4 border-t-purple-400"
-          >
-            <CardContent>
-              <Typography variant="h6">{task.title}</Typography>
-              <Typography className="text-gray-600 mb-2">
-                {task.description}
-              </Typography>
-              <Typography
-                variant="caption"
-                className="bg-gray-200 px-2 py-1 rounded"
-              >
-                Status: {task.status}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
+        {/* Box 2 */}
+        <div className="border-2 border-gray-800 rounded-3xl p-6 min-h-[300px]">
+           {/* Add other categories or tasks here later */}
+        </div>
 
-        {tasks.length === 0 && (
-          <Typography>No tasks found. Create one!</Typography>
-        )}
-      </Stack>
+        {/* Box 3 */}
+        <div className="border-2 border-gray-800 rounded-3xl p-6 min-h-[300px]">
+        </div>
+
+        {/* Box 4 */}
+        <div className="border-2 border-gray-800 rounded-3xl p-6 min-h-[300px]">
+        </div>
+
+      </div>
     </Container>
   );
 }

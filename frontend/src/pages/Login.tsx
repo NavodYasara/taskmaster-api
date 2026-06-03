@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Container,
   Card,
@@ -36,7 +36,6 @@ export default function Login() {
         const data = await response.json();
         localStorage.setItem("jwt", data.token);
         navigate("/");
-        
       } else {
         setMessage("Login failed!");
       }
@@ -46,7 +45,7 @@ export default function Login() {
   };
 
   return (
-    <Box className=" layer_3 box flex-1 w-full flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-900 via-purple-800 to-violet-600">
+    <Box className="route_layer flex-1 flex w-full h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       <Container maxWidth="sm">
         <Card
           elevation={0}
@@ -118,12 +117,18 @@ export default function Login() {
             <Box className="mt-6 text-center">
               <Typography variant="body2" className="text-gray-600">
                 Don't you register yet?{" "}
-                <a
+                {/* <a
                   href="/register"
                   className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors"
                 >
                   Sign up here
-                </a>
+                </a> */}
+                <Link
+                  to="/register"
+                  className="text-indigo-600 font-bold hover:text-indigo-500 transition-colors"
+                >
+                  Sign up here
+                </Link>
               </Typography>
             </Box>
           </Box>
