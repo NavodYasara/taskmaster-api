@@ -1,10 +1,9 @@
 import { Outlet } from "react-router-dom";
-import { Container } from "@mui/material";
 import Navbar from "../Navbar";
 
 export const DashboardLayout = () => {
   return (
-    <div>
+    <div className="dashboard_layout_layer min-h-screen h-300">
       <Navbar />
       <Outlet />
     </div>

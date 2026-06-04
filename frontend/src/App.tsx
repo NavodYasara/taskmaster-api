@@ -5,7 +5,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 
-function APP() {
+const APP = () => {
   return (
     <BrowserRouter>
       <div className="layer_1_browserRouter min-h-screen flex flex-col">
@@ -23,6 +23,6 @@ function APP() {
       </div>
     </BrowserRouter>
   );
-}
+};
 
 export default APP;

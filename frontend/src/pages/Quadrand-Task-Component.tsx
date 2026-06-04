@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
-  Card,
-  CardContent
 } from "@mui/material";
 
 // Define what a Task looks like in TypeScript (matches your Java DTO!)

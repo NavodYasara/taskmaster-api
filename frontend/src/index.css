@@ -1,6 +1,2 @@
 @import "tailwindcss";
 
-.bg-brand-gradient{
-    @apply bg-gradient-to-br from-indigo-900 via-purple-800 to-violet-600;
-}
-
