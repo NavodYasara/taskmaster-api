@@ -2,8 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DashboardLayout } from "./components/Layouts/DashboardLayout";
 import { AuthLayout } from "./components/Layouts/AuthLayout";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+import MyTasks from "./pages/MyTasks";
 import Login from "./pages/Login";
+import QuadrandPage from "./pages/Quadrand-Task-Component";
 
 const APP = () => {
   return (
@@ -16,7 +17,8 @@ const APP = () => {
               <Route path="/Register" element={<Register />} />
             </Route>
             <Route element={<DashboardLayout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<MyTasks />} />
+              <Route path="/quadrand" element={<QuadrandPage />} />
             </Route>
           </Routes>
         </div>

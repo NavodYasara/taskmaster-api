@@ -14,7 +14,7 @@ interface Task {
   dueDate: string;
 }
 
-export default function Dashboard() {
+export default function QuadrandPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const navigate = useNavigate();
   const [title, setTitle] = useState("");

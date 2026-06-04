@@ -11,7 +11,7 @@ interface Task {
   dueDate: string;
 }
 
-export default function Dashboard() {
+export default function MyTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -79,7 +79,7 @@ export default function Dashboard() {
   };
 
   return (
-    <Container className=" layer_routes mt-20">
+    <div className=" layer_routes max-w-4xl mx-auto bg-amber-200">
       <Typography variant="h4" className="mb-6 font-bold text-gray-800">
         My Tasks
       </Typography>
@@ -112,6 +112,6 @@ export default function Dashboard() {
           <Typography>No tasks found. Create one!</Typography>
         )}
       </Stack>
-    </Container>
+    </div>
   );
 }
