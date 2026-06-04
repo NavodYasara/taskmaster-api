@@ -81,10 +81,10 @@ export default function MyTasks() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
       {/* Header section */}
-      <div className="mb-8 flex justify-between items-end">
-        <div>
+      <div className="mb-8 flex justify-between items-end shrink-0">
+        <div className="card-head-container">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
             My Tasks
           </h1>
@@ -95,20 +95,23 @@ export default function MyTasks() {
       </div>
 
       {tasks.length === 0 ? (
-        <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+        <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 flex-1">
           <p className="text-gray-500 font-medium">
             No tasks found. Time to create one!
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto flex-1 pr-2 pb-4 pt-2">
           {tasks.map((task) => (
             <div
               key={task.id}
               className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 border-t-4 border-t-indigo-500 transition-all duration-300 flex flex-col"
             >
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-bold text-gray-800 line-clamp-1 pr-4">
+              <div className="flex justify-between items-start mb-2 ">
+                <h3 
+                  className="text-lg font-bold text-gray-800 line-clamp-1 pr-4"
+                  title={task.title}
+                >
                   {task.title}
                 </h3>
                 {/* Icons only show when hovering over the card for a cleaner look */}
@@ -146,7 +149,10 @@ export default function MyTasks() {
                 </div>
               </div>
 
-              <p className="text-gray-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed">
+              <p 
+                className="text-gray-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed"
+                title={task.description}
+              >
                 {task.description}
               </p>
 
