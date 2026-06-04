@@ -8,7 +8,7 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar Container */}
-      <nav className="sticky top-auto left-1/2 transform -translate-x-1/2 max-w-4xl w-[90%] rounded-2xl sm:rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/20 text-gray-800 transition-all duration-300">
+      <nav className="bg-gradient-to-b from-indigo-500 to-indigo-400 sticky top-auto mx-auto max-w-4xl w-[90%] rounded-2xl sm:rounded-full backdrop-blur-md shadow-lg border border-white/20 text-gray-800 transition-all duration-300">
         {/* Top Bar */}
         <div className="flex justify-between items-center px-6 sm:px-8 h-16">
           <div className="font-bold text-xl tracking-tight text-indigo-600">
