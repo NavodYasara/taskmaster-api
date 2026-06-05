@@ -4,7 +4,6 @@ import copyIcon from "../assets/copy.svg";
 import deleteIcon from "../assets/delete.svg";
 import editIcon from "../assets/edit.svg";
 
-// Define what a Task looks like in TypeScript (matches your Java DTO!)
 interface Task {
   id: number;
   title: string;
@@ -19,6 +18,7 @@ export default function MyTasks() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDuedate] = useState("");
+  const [isModelOpen, setIsModelOpen] = useState(false);
 
   useEffect(() => {
     // 1. Get the token we saved during login
@@ -56,12 +56,19 @@ export default function MyTasks() {
     fetchTasks();
   }, [navigate]);
 
-  const handleCreateTask = async () => {
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault(); // Stop the page from refreshing!
+
+    const token = localStorage.getItem("jwt"); // Get our "VIP pass"
+
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/api/tasks/addTask`,
       {
         method: "POST",
-        headers: { contentType: "Application/JSON" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           title: title,
           description: description,
@@ -70,11 +77,12 @@ export default function MyTasks() {
       },
     );
     if ((await response).ok) {
-      const data = await response.json();
-      setTasks([...tasks, data]); // Add the new task to the list
+      const newTask = await response.json();
+      setTasks([newTask, ...tasks]); // Add the new task to the list
       setTitle(""); // Clear form
       setDescription("");
       setDuedate("");
+      setIsModelOpen(false);
     } else {
       alert("Failed to create task");
     }
@@ -83,7 +91,7 @@ export default function MyTasks() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
       {/* Header section */}
-      <div className="mb-8 flex justify-between items-end shrink-0">
+      <div className="mb-8 flex justify-between items-end">
         <div className="card-head-container">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
             My Tasks
@@ -92,8 +100,15 @@ export default function MyTasks() {
             Manage your daily goals and objectives.
           </p>
         </div>
+        <button
+          className="bg-green-600 text-white font-bold mb-2 py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors"
+          onClick={() => setIsModelOpen(true)}
+        >
+          CREATE NEW TASK
+        </button>
       </div>
 
+      {/* Task section*/}
       {tasks.length === 0 ? (
         <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 flex-1">
           <p className="text-gray-500 font-medium">
@@ -108,7 +123,7 @@ export default function MyTasks() {
               className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 border-t-4 border-t-indigo-500 transition-all duration-300 flex flex-col"
             >
               <div className="flex justify-between items-start mb-2 ">
-                <h3 
+                <h3
                   className="text-lg font-bold text-gray-800 line-clamp-1 pr-4"
                   title={task.title}
                 >
@@ -149,7 +164,7 @@ export default function MyTasks() {
                 </div>
               </div>
 
-              <p 
+              <p
                 className="text-gray-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed"
                 title={task.description}
               >
@@ -180,6 +195,52 @@ export default function MyTasks() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {isModelOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md">
+            <h2 className="text-2xl font-bold mb-4">Create New Task</h2>
+
+            <form onSubmit={handleCreateTask} className="flex flex-col gap-4">
+              <input
+                className="border p-2 rounded"
+                placeholder="Task Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+              <input
+                className="border p-2 rounded"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <input
+                type="date"
+                className="border p-2 rounded w-full text-gray-700"
+                value={dueDate}
+                onChange={(e) => setDuedate(e.target.value)}
+              />
+
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModelOpen(false)}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+                >
+                  Save Task
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
