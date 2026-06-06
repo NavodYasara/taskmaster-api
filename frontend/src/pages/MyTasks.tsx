@@ -19,6 +19,7 @@ export default function MyTasks() {
   const [description, setDescription] = useState("");
   const [dueDate, setDuedate] = useState("");
   const [isModelOpen, setIsModelOpen] = useState(false);
+  
 
   useEffect(() => {
     // 1. Get the token we saved during login
@@ -57,9 +58,8 @@ export default function MyTasks() {
   }, [navigate]);
 
   const handleCreateTask = async (e: React.FormEvent) => {
-    e.preventDefault(); // Stop the page from refreshing!
-
-    const token = localStorage.getItem("jwt"); // Get our "VIP pass"
+    e.preventDefault();
+    const token = localStorage.getItem("jwt");
 
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/api/tasks/addTask`,
@@ -85,6 +85,58 @@ export default function MyTasks() {
       setIsModelOpen(false);
     } else {
       alert("Failed to create task");
+    }
+  };
+
+  const handleSaveTask = async (e: React.FormEvent, editedTaskId: number) => {
+    e.preventDefault();
+    const token = localStorage.getItem("jwt");
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${editedTaskId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: title,
+          description: description,
+          dueDate: dueDate,
+        }),
+      },
+    );
+    if ((await response).ok) {
+      setTasks(
+        tasks.map((task) => {
+          if (task.id === editedTaskId) {
+            return { ...task, title, description, dueDate };
+          } else {
+            return task;
+          }
+        }),
+      );
+      setIsModelOpen(false);
+    }
+  };
+
+  const handleDeleteTask = async (id: number) => {
+    const token = localStorage.getItem("jwt");
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/tasks/deleteTask/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (response.ok) {
+      setTasks(tasks.filter((task) => task.id !== id));
+    } else {
+      alert("Failed to delete task");
     }
   };
 
@@ -116,11 +168,11 @@ export default function MyTasks() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto flex-1 pr-2 pb-4 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto flex-1 p-1">
           {tasks.map((task) => (
             <div
               key={task.id}
-              className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 border-t-4 border-t-indigo-500 transition-all duration-300 flex flex-col"
+              className="h-56 group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 border-t-4 border-t-indigo-500 transition-all duration-200 flex flex-col"
             >
               <div className="flex justify-between items-start mb-2 ">
                 <h3
@@ -129,6 +181,7 @@ export default function MyTasks() {
                 >
                   {task.title}
                 </h3>
+
                 {/* Icons only show when hovering over the card for a cleaner look */}
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mt-1 -mr-2 shrink-0">
                   <button
@@ -144,6 +197,7 @@ export default function MyTasks() {
                   <button
                     aria-label="Edit item"
                     className="p-2 text-gray-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                    onClick={(e) => setIsModelOpen(true)}
                   >
                     <img
                       src={editIcon}
@@ -154,6 +208,7 @@ export default function MyTasks() {
                   <button
                     aria-label="Delete item"
                     className="p-2 text-gray-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                    onClick={() => handleDeleteTask(task.id)}
                   >
                     <img
                       src={deleteIcon}
@@ -165,7 +220,7 @@ export default function MyTasks() {
               </div>
 
               <p
-                className="text-gray-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed"
+                className="text-gray-500 text-sm mb-6 flex-grow line-clamp-2 leading-relaxed"
                 title={task.description}
               >
                 {task.description}
