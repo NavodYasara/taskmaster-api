@@ -7,5 +7,6 @@ public record TaskResponseDTO(
         String title,
         String description,
         String status,
-        LocalDate dueDate
+        LocalDate dueDate,
+        String quadrant
 ) {}

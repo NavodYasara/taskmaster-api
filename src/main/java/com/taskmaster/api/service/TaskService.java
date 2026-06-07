@@ -103,7 +103,8 @@ public class TaskService {
                                 savedTask.getTitle(),
                                 savedTask.getDescription(),
                                 savedTask.getStatus(),
-                                savedTask.getDueDate());
+                                savedTask.getDueDate(),
+                                savedTask.getQuadrant());
         }
 
         public List<TaskResponseDTO> getUserTask() {
@@ -119,7 +120,8 @@ public class TaskService {
                                 task.getTitle(),
                                 task.getDescription(),
                                 task.getStatus(),
-                                task.getDueDate())).toList();
+                                task.getDueDate(),
+                                task.getQuadrant())).toList();
         }
 
         public UpdateTaskDTO UpdateTask(Long taskId, UpdateTaskDTO updateRequest) {
@@ -135,11 +137,12 @@ public class TaskService {
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                                         "You don't have permission to eidt this task");
                 }
-
+                
                 existingTask.setTitle(updateRequest.title());
                 existingTask.setDescription(updateRequest.description());
                 existingTask.setDueDate(updateRequest.dueDate());
                 existingTask.setStatus(updateRequest.status());
+                existingTask.setQuadrant(updateRequest.quadrant());
 
                 taskRepository.save(existingTask);
 
@@ -147,19 +150,22 @@ public class TaskService {
                                 existingTask.getTitle(),
                                 existingTask.getDescription(),
                                 existingTask.getStatus(),
-                                existingTask.getDueDate());
+                                existingTask.getDueDate(),
+                                existingTask.getQuadrant());
         }
 
         public void deleteTask(Long taskId) {
                 String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
                 UserEntity userObject = userRepository.findByEmail(userEmail)
-                        .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "User not found with email: " + userEmail));
 
                 TaskEntity existingTask = taskRepository.findById(taskId)
-                        .orElseThrow(() -> new ResourceNotFoundException("No such task found!"));
+                                .orElseThrow(() -> new ResourceNotFoundException("No such task found!"));
 
                 if (!existingTask.getUser().getUserId().equals(userObject.getUserId())) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You don't have permission to Delete this task");
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                        "You don't have permission to Delete this task");
                 }
 
                 taskRepository.delete(existingTask);

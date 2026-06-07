@@ -34,4 +34,8 @@ public class TaskEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // Maps to the users table primary key
     private UserEntity user;
+
+    @Column(name="quadrant", length = 20)
+    private String quadrant;
+
 }

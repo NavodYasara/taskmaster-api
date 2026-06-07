@@ -6,5 +6,6 @@ public record UpdateTaskDTO(
         String title,
         String description,
         String status,
-        LocalDate dueDate) {
-}
+        LocalDate dueDate,
+        String quadrant
+) {}

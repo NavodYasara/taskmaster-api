@@ -4,7 +4,7 @@ import { AuthLayout } from "./components/Layouts/AuthLayout";
 import Register from "./pages/Register";
 import MyTasks from "./pages/MyTasks";
 import Login from "./pages/Login";
-import QuadrandPage from "./pages/Quadrand-Task-Component";
+import Matrix from "./pages/Matrix";
 
 const APP = () => {
   return (
@@ -18,7 +18,7 @@ const APP = () => {
             </Route>
             <Route element={<DashboardLayout />}>
               <Route path="/" element={<MyTasks />} />
-              <Route path="/quadrand" element={<QuadrandPage />} />
+              <Route path="/matrix" element={<Matrix />} />
             </Route>
           </Routes>
         </div>
