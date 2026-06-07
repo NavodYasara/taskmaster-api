@@ -47,8 +47,7 @@ export default function MyTasks() {
         const data = await response.json();
         setTasks(data);
       } else {
-        localStorage.removeItem("jwt");
-        navigate("/login");
+        logout();
       }
     };
 
