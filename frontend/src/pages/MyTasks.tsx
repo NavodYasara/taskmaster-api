@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 import copyIcon from "../assets/copy.svg";
 import deleteIcon from "../assets/delete.svg";
 import editIcon from "../assets/edit.svg";
@@ -18,20 +19,18 @@ export default function MyTasks() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDuedate] = useState("");
+  const [status, setStatus] = useState("TODO");
   const [isModelOpen, setIsModelOpen] = useState(false);
-  
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const isEditMode = editingTaskId !== null;
+  const { token, logout } = useAuth();
 
   useEffect(() => {
-    // 1. Get the token we saved during login
-    const token = localStorage.getItem("jwt");
-
-    // 2. If they aren't logged in, kick them out!
     if (!token) {
-      navigate("/login");
+      logout();
       return;
     }
 
-    // 3. Fetch the tasks SECURELY
     const fetchTasks = async () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/tasks`,
@@ -46,9 +45,8 @@ export default function MyTasks() {
 
       if (response.ok) {
         const data = await response.json();
-        setTasks(data); // Save the tasks into our React state
+        setTasks(data);
       } else {
-        // If the token is expired or invalid, clear it and kick them out
         localStorage.removeItem("jwt");
         navigate("/login");
       }
@@ -57,67 +55,68 @@ export default function MyTasks() {
     fetchTasks();
   }, [navigate]);
 
-  const handleCreateTask = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = localStorage.getItem("jwt");
-
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/tasks/addTask`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: title,
-          description: description,
-          dueDate: dueDate,
-        }),
-      },
-    );
-    if ((await response).ok) {
-      const newTask = await response.json();
-      setTasks([newTask, ...tasks]); // Add the new task to the list
-      setTitle(""); // Clear form
-      setDescription("");
-      setDuedate("");
-      setIsModelOpen(false);
-    } else {
-      alert("Failed to create task");
-    }
+  const openCreateModal = () => {
+    setTitle("");
+    setDescription("");
+    setDuedate("");
+    setStatus("TODO");
+    setEditingTaskId(null);
+    setIsModelOpen(true);
   };
 
-  const handleSaveTask = async (e: React.FormEvent, editedTaskId: number) => {
+  const openEditModal = (task: Task) => {
+    setTitle(task.title);
+    setDescription(task.description);
+    setDuedate(task.dueDate);
+    setStatus(task.status);
+    setEditingTaskId(task.id);
+    setIsModelOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModelOpen(false);
+    setEditingTaskId(null);
+  };
+
+  const handleSubmitTask = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem("jwt");
+    const method = isEditMode ? "PUT" : "POST";
+    const url = isEditMode
+      ? `${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${editingTaskId}`
+      : `${import.meta.env.VITE_API_URL}/api/tasks/addTask`;
 
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${editedTaskId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: title,
-          description: description,
-          dueDate: dueDate,
-        }),
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
-    if ((await response).ok) {
-      setTasks(
-        tasks.map((task) => {
-          if (task.id === editedTaskId) {
-            return { ...task, title, description, dueDate };
-          } else {
+      body: JSON.stringify({
+        title: title,
+        description: description,
+        dueDate: dueDate,
+        status: status,
+      }),
+    });
+
+    if (response.ok) {
+      if (isEditMode) {
+        setTasks(
+          tasks.map((task) => {
+            if (task.id === editingTaskId) {
+              return { ...task, title, description, dueDate, status };
+            }
             return task;
-          }
-        }),
-      );
-      setIsModelOpen(false);
+          }),
+        );
+      } else {
+        const newTask = await response.json();
+        setTasks([newTask, ...tasks]);
+      }
+      closeModal();
+    } else {
+      alert(isEditMode ? "Failed to update task" : "Failed to create task");
     }
   };
 
@@ -154,7 +153,7 @@ export default function MyTasks() {
         </div>
         <button
           className="bg-green-600 text-white font-bold mb-2 py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors"
-          onClick={() => setIsModelOpen(true)}
+          onClick={openCreateModal}
         >
           CREATE NEW TASK
         </button>
@@ -197,7 +196,7 @@ export default function MyTasks() {
                   <button
                     aria-label="Edit item"
                     className="p-2 text-gray-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
-                    onClick={(e) => setIsModelOpen(true)}
+                    onClick={() => openEditModal(task)}
                   >
                     <img
                       src={editIcon}
@@ -256,9 +255,11 @@ export default function MyTasks() {
       {isModelOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Create New Task</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              {isEditMode ? "Edit Task" : "Create New Task"}
+            </h2>
 
-            <form onSubmit={handleCreateTask} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmitTask} className="flex flex-col gap-4">
               <input
                 className="border p-2 rounded"
                 placeholder="Task Title"
@@ -282,7 +283,7 @@ export default function MyTasks() {
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
-                  onClick={() => setIsModelOpen(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
                 >
                   Cancel
