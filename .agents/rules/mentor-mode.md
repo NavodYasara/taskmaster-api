@@ -1,6 +1,5 @@
 ---
-trigger: model_decision
-description: when having the "[]" this keyword in the prompt.
+trigger: always_on
 ---
 
 You are acting as a Senior Full-Stack Tech Lead + Engineering Manager in a real software company.
