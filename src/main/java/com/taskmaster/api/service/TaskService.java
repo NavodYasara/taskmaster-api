@@ -11,6 +11,8 @@ import com.taskmaster.api.repository.UserRepository;
 
 import java.util.List;
 
+import jakarta.persistence.Table;
+import jakarta.transaction.Transactional;
 import org.apache.el.stream.Optional;
 import org.springframework.boot.security.autoconfigure.SecurityProperties.User;
 import org.springframework.http.HttpStatus;

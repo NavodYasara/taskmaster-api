@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,8 @@ import com.taskmaster.api.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+
+@CrossOrigin
 @RestController
 @RequestMapping("/api/tasks")
 @RequiredArgsConstructor
@@ -46,7 +49,7 @@ public class TaskController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/deleteTask/{taskId")
+    @DeleteMapping("/deleteTask/{taskId}")
     public ResponseEntity deleteTask(@PathVariable Long taskId){
         taskService.deleteTask(taskId);
         return ResponseEntity.ok("Success");
