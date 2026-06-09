@@ -51,7 +51,6 @@ export default function MyTasks() {
         navigate("/login");
       }
     };
-
     fetchTasks();
   }, [navigate]);
 
@@ -137,6 +136,32 @@ export default function MyTasks() {
     } else {
       alert("Failed to delete task");
     }
+  };
+
+  const handleStatusChange = async (id: number) => {
+    // pass para that the id of going to be clicked
+    !token && logout();
+    const previousStatus = tasks.filter((task) => task.id === id)[0].status;
+    const newStatus = previousStatus === "TODO" ? "DONE" : "TODO";
+    fetch(`${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...tasks.filter((task) => task.id === id)[0],
+        status: newStatus,
+      }),
+    });
+    setTasks(
+      tasks.map((task) => {
+        if (task.id === id) {
+          return { ...task, status: newStatus };
+        }
+        return task;
+      }),
+    );
   };
 
   return (
@@ -227,9 +252,12 @@ export default function MyTasks() {
 
               {/* Status and Due Date footer */}
               <div className="flex flex-wrap gap-2 items-center mt-auto pt-4 border-t border-gray-50">
-                <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide">
+                <button
+                  className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide"
+                  onClick={() => handleStatusChange(task.id)}
+                >
                   {task.status}
-                </span>
+                </button>
                 <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 border border-gray-200">
                   <svg
                     className="w-3.5 h-3.5 text-gray-400"
