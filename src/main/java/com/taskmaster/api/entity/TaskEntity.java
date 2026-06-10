@@ -35,7 +35,7 @@ public class TaskEntity {
     @JoinColumn(name = "user_id", nullable = false) // Maps to the users table primary key
     private UserEntity user;
 
-    @Column(name="quadrant", length = 20)
+    @Column(name="quadrant", length = 30)
     private String quadrant;
 
 }
