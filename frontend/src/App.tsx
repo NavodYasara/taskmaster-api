@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import MyTasks from "./pages/MyTasks";
 import Login from "./pages/Login";
 import Matrix from "./pages/Matrix";
+import SandBoxPage from "./pages/SandBoxPage"
 
 const APP = () => {
   return (
@@ -19,6 +20,7 @@ const APP = () => {
             <Route element={<DashboardLayout />}>
               <Route path="/" element={<MyTasks />} />
               <Route path="/matrix" element={<Matrix />} />
+              <Route path="/sandbox" element={<SandBoxPage />} />
             </Route>
           </Routes>
         </div>
