@@ -257,9 +257,12 @@ export default function MyTasks() {
 
               {/* Status and Due Date footer */}
               <div className="flex flex-wrap gap-2 items-center mt-auto pt-4 border-t border-gray-50">
-                <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide">
+                <button
+                  onClick={() => handleStatusChange(task.id)}
+                  className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide"
+                >
                   {task.status}
-                </span>
+                </button>
                 <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 border border-gray-200">
                   <svg
                     className="w-3.5 h-3.5 text-gray-400"
