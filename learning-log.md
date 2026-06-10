@@ -44,27 +44,6 @@ _(We can add challenges here as they come up)_
 
 ---
 
-## 📅 June 10, 2026
-
-### What I worked on:
-
-- **Status Toggle Feature:** Implemented a feature that lets users click on a task's status badge to toggle it between `TODO` and `DONE`. This calls the backend API and updates the UI in real time.
-
-### What I struggled with:
-
-- **Git Merge Conflict — Lost Code:** When I merged the `f/dragNdrop` branch into `dev`, the drag-and-drop branch had an **older version** of `MyTasks.tsx`. During the merge, Git kept the older version and **overwrote my status update code**. The feature disappeared from all branches.
-- **Button with no action:** I changed a `<span>` to a `<button>` in JSX but forgot to connect the `onClick` handler. The button looked correct but did nothing when clicked.
-
-### New things I learned:
-
-- **Git Merge Conflicts — What they are:** When two branches both change the **same file**, Git gets confused about which version to keep. This is called a **merge conflict**. If you're not careful, one side's work gets overwritten.
-- **Git History is a Safety Net:** Even when code seems "lost", it's still saved in the git history (in old commits). You can always find it using `git log` and `git show <commit-id>`.
-- **`onClick` is the Wire:** A `<button>` in React is like a doorbell — it looks like a button, but without an `onClick` handler, it does nothing. The `onClick` is the wire that connects the button to the action.
-- **After a merge, always test!** A merge can silently break features even without showing conflicts. Always run and test the app after any merge.
-- **Git Commit Discipline:** Commit messages like `.`, `ffix:`, and `bug::` are hard to read later. Use clear messages like `fix: wire onClick handler to status toggle button` so you understand what changed months later.
-
----
-
 _(Whenever we finish a new feature or learn something tricky, we will add a new date section here!
 Whenever we finish fixing a hard bug, learning a new concept, or building a cool feature, you can just tell me: "Hey, add what we just did to my learning log!" and I will automatically write down the new things you learned and the challenges you faced in simple terms.
 )_
