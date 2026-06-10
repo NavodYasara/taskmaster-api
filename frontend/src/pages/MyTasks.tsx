@@ -51,6 +51,7 @@ export default function MyTasks() {
         navigate("/login");
       }
     };
+
     fetchTasks();
   }, [navigate]);
 
@@ -138,6 +139,7 @@ export default function MyTasks() {
     }
   };
 
+<<<<<<< HEAD
   const handleStatusChange = async (id: number) => {
     // pass para that the id of going to be clicked
     !token && logout();
@@ -169,6 +171,8 @@ export default function MyTasks() {
     );
   };
 
+=======
+>>>>>>> 7114e951f9cd0e870b9503cf59e2f035c4d48e9d
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
       {/* Header section */}
@@ -257,12 +261,9 @@ export default function MyTasks() {
 
               {/* Status and Due Date footer */}
               <div className="flex flex-wrap gap-2 items-center mt-auto pt-4 border-t border-gray-50">
-                <button
-                  className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide"
-                  onClick={() => handleStatusChange(task.id)}
-                >
+                <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide">
                   {task.status}
-                </button>
+                </span>
                 <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 border border-gray-200">
                   <svg
                     className="w-3.5 h-3.5 text-gray-400"
