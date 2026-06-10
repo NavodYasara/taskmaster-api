@@ -25,7 +25,7 @@ export default function Matrix() {
   const { token } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeId, setActiveId] = useState<string | null>(null); // to remember WHICH task is the Ghost
+  const [activeId, setActiveId] = useState<string | null>(null); // to remember WHICH task is the Ghost (put this under tasks state):
 
   useEffect(() => {
     fetchTasks();
@@ -56,7 +56,7 @@ export default function Matrix() {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/tasks/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${id}`,
         {
           method: "PUT",
           headers: {
