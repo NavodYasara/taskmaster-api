@@ -123,13 +123,16 @@ export default function Matrix() {
             {isLoading ? (
               <p className="text-gray-500 text-sm">Loading tasks...</p>
             ) : (
-              <div className="flex-1 overflow-y-auto space-y-3">
+              <DroppableQuadrant
+                id="TODO_POOL"
+                className="flex-1 overflow-y-auto space-y-3"
+              >
                 {tasks
                   .filter((t) => !t.quadrant || t.quadrant === "TODO_POOL")
                   .map((task) => (
                     <DraggableTask key={task.id} task={task} />
                   ))}
-              </div>
+              </DroppableQuadrant>
             )}
           </div>
 

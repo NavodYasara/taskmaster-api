@@ -53,7 +53,7 @@ export const DroppableQuadrant = ({
   return (
     <div
       ref={setNodeRef}
-      className={`${className} transition-colors ${isOver ? "ring-4 ring-indigo-300 bg-indigo-50/50" : ""}`}
+      className={`${className} transition-colors ${isOver ? "ring-2 ring-indigo-100 bg-indigo-50/50" : ""}`}
     >
       {children}
     </div>
