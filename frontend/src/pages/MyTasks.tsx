@@ -143,21 +143,26 @@ export default function MyTasks() {
     !token && logout();
     const previousStatus = tasks.filter((task) => task.id === id)[0].status;
     const newStatus = previousStatus === "TODO" ? "DONE" : "TODO";
-    fetch(`${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...tasks.filter((task) => task.id === id)[0],
+          status: newStatus,
+        }),
       },
-      body: JSON.stringify({
-        ...tasks.filter((task) => task.id === id)[0],
-        status: newStatus,
-      }),
-    });
+    );
+    if (!res.ok) return alert("Failed to update task");
+    const data = await res.json();
     setTasks(
       tasks.map((task) => {
         if (task.id === id) {
-          return { ...task, status: newStatus };
+          return { ...task, status: data.status };
         }
         return task;
       }),
