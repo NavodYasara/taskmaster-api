@@ -138,7 +138,6 @@ export default function MyTasks() {
     }
   };
 
-<<<<<<< HEAD
   const handleStatusChange = async (id: number) => {
     // pass para that the id of going to be clicked
     !token && logout();
@@ -170,8 +169,6 @@ export default function MyTasks() {
     );
   };
 
-=======
->>>>>>> 7114e951f9cd0e870b9503cf59e2f035c4d48e9d
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
       {/* Header section */}
