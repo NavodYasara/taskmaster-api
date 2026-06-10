@@ -25,9 +25,9 @@ export default function Navbar() {
             </button>
             <button
               className="px-4 py-2 rounded-full hover:bg-indigo-50 text-sm font-medium transition-colors cursor-pointer"
-              onClick={() => navigate("/matrix")}
+              onClick={() => navigate("/quadrand")}
             >
-              MATRIX
+              QUADRIENT
             </button>
             <button className="px-4 py-2 rounded-full hover:bg-indigo-50 text-sm font-medium transition-colors cursor-pointer">
               SETTINGS
@@ -74,7 +74,7 @@ export default function Navbar() {
               My Tasks
             </button>
             <button className="w-full text-left px-4 py-2 rounded-xl hover:bg-indigo-50 text-sm font-medium transition-colors cursor-pointer">
-              MATRIX
+              QUADRIENT
             </button>
             <button className="w-full text-left px-4 py-2 rounded-xl hover:bg-indigo-50 text-sm font-medium transition-colors cursor-pointer">
               SETTINGS
