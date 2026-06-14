@@ -1,44 +1,161 @@
-import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
+import React from "react";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
+import deleteIcon from "../assets/delete.svg";
+import editIcon from "../assets/edit.svg";
 
-interface Task {
-  id: string;
+// Shared Task interface
+export interface Task {
+  id: number;
   title: string;
   description: string;
-  status: "TODO" | "IN_PROGRESS" | "DONE";
-  dueDate: String;
-  quadrant: String;
+  status: "TODO" | "DONE";
+  dueDate: string;
+  quadrant: string;
 }
 
-// 1. The Sticky Note (Draggable)
-export const DraggableTask = ({ task }: { task: Task }) => {
+// Props for the TaskCard
+interface TaskCardProps {
+  task: Task;
+  draggable?: boolean; // Default: false
+  onStatusChange?: (id: number) => void;
+  onEdit?: (task: Task) => void;
+  onDelete?: (id: number) => void;
+}
+
+// The inner visual card — the actual HTML/JSX
+function TaskCardInner({
+  task,
+  onStatusChange,
+  onEdit,
+  onDelete,
+}: Omit<TaskCardProps, "draggable">) {
+  return (
+    <div className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 border-t-4 border-t-indigo-500 transition-all duration-200 flex flex-col gap-2">
+      {/* Title Row */}
+      <div className="flex justify-between items-start">
+        <h3
+          className="text-sm font-bold text-gray-800 line-clamp-1 pr-2"
+          title={task.title}
+        >
+          {task.title}
+        </h3>
+        {/* Action icons — only show on hover */}
+        {(onEdit || onDelete) && (
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity -mt-1 -mr-1 shrink-0">
+            {onEdit && (
+              <button
+                aria-label="Edit task"
+                className="p-1.5 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(task);
+                }}
+              >
+                <img
+                  src={editIcon}
+                  alt="edit"
+                  className="w-3.5 h-3.5 opacity-70"
+                />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                aria-label="Delete task"
+                className="p-1.5 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(task.id);
+                }}
+              >
+                <img
+                  src={deleteIcon}
+                  alt="delete"
+                  className="w-3.5 h-3.5 opacity-70"
+                />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Description */}
+      <p
+        className="text-xs text-gray-500 line-clamp-2 leading-relaxed flex-grow"
+        title={task.description}
+      >
+        {task.description}
+      </p>
+
+      {/* Footer: Status Badge + Due Date */}
+      <div className="flex flex-wrap gap-2 items-center pt-2 border-t border-gray-100">
+        <button
+          className="bg-indigo-50 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full border border-indigo-100 uppercase cursor-pointer hover:bg-indigo-100 transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            onStatusChange?.(task.id);
+          }}
+        >
+          {task.status}
+        </button>
+        <span className="text-xs text-gray-500 flex items-center gap-1">
+          <svg
+            className="w-3 h-3 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          {task.dueDate}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// The exported TaskCard — wraps with draggable if needed
+export function TaskCard({
+  task,
+  draggable = false,
+  onStatusChange,
+  onEdit,
+  onDelete,
+}: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id.toString(), // The ID must be a string so the room knows WHICH sticky note you picked up
+    id: task.id.toString(),
+    disabled: !draggable, // Disable dnd-kit if draggable is false
   });
 
-  // This math just tells the sticky note to visually follow your mouse cursor
   const style = transform
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
     : undefined;
 
   return (
     <div
-      ref={setNodeRef} // Tells Dnd-Kit "This is the physical HTML element"
-      style={style} // Applies the mouse-following math
-      {...listeners} // Listens for your mouse clicks
-      {...attributes} // Accessibility attributes
-      className="bg-gray-300 p-4 mb-3 rounded-lg shadow-sm border border-gray-100 border-l-4 border-l-gray-400 cursor-grab active:cursor-grabbing hover:shadow-md relative z-50"
+      ref={setNodeRef}
+      style={style}
+      {...(draggable ? listeners : {})}
+      {...(draggable ? attributes : {})}
+      className={
+        draggable ? "cursor-grab active:cursor-grabbing relative z-50" : ""
+      }
     >
-      <h3 className="font-bold text-sm text-gray-800 line-clamp-1">
-        {task.title}
-      </h3>
-      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-        {task.description}
-      </p>
+      <TaskCardInner
+        task={task}
+        onStatusChange={onStatusChange}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
     </div>
   );
-};
+}
 
-// 2. The Whiteboard Square (Droppable)
+// The Droppable Quadrant box (unchanged)
 export const DroppableQuadrant = ({
   id,
   children,
@@ -48,12 +165,12 @@ export const DroppableQuadrant = ({
   children: React.ReactNode;
   className: string;
 }) => {
-  const { setNodeRef, isOver } = useDroppable({ id }); // 'id' tells the room WHICH square this is
+  const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
     <div
       ref={setNodeRef}
-      className={`${className} transition-colors ${isOver ? "ring-2 ring-indigo-100 bg-indigo-50/50" : ""}`}
+      className={`${className} transition-colors ${isOver ? "ring-2 ring-indigo-300 bg-indigo-50/20" : ""}`}
     >
       {children}
     </div>

@@ -2,24 +2,19 @@ import useAuth from "../hooks/useAuth";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import {
-  DraggableTask,
+  TaskCard,
   DroppableQuadrant,
+  type Task,
 } from "../components/Matrix-Components";
 import {
   DndContext,
   DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: "TODO" | "IN_PROGRESS" | "DONE";
-  dueDate: String;
-  quadrant: String;
-}
 
 export default function Matrix() {
   const { token } = useAuth();
@@ -51,6 +46,29 @@ export default function Matrix() {
     }
   };
 
+  // This function tells the UI "When you start dragging, show the Ghost."
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id.toString());
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return; // Dropped on the floor
+
+    const taskId = active.id.toString();
+    const newQuadrant = over.id.toString();
+
+    // Find the task we are dragging
+    const draggedTask = tasks.find((t) => t.id.toString() === taskId);
+
+    // Only update the database if we ACTUALLY moved it to a new quadrant
+    if (draggedTask && draggedTask.quadrant !== newQuadrant) {
+      updateTask(taskId, { ...draggedTask, quadrant: newQuadrant });
+    }
+    setActiveId(null); // Hide the ghost when the drop ends
+  };
+
   const updateTask = async (id: string, updates: Partial<Task>) => {
     if (!token) return;
 
@@ -79,31 +97,50 @@ export default function Matrix() {
     }
   };
 
-  // This function tells the UI "When you start dragging, show the Ghost."
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id.toString());
+  // Add this function inside Matrix()
+  const handleStatusChange = async (id: number) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    const newStatus = task.status === "TODO" ? "DONE" : "TODO";
+
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/tasks/updateTasks/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        // body: JSON.stringify({ ...task, status: newStatus }),
+        body: JSON.stringify({
+          ...tasks.filter((task) => task.id === id)[0],
+          status: newStatus,
+        }),
+      },
+    );
+
+    if (!res.ok) return alert("Failed to update task");
+    const data = await res.json();
+    setTasks(
+      tasks.map((t) => (t.id === id ? { ...t, status: data.status } : t)),
+    );
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over) return; // Dropped on the floor
-
-    const taskId = active.id.toString();
-    const newQuadrant = over.id.toString();
-
-    // Find the task we are dragging
-    const draggedTask = tasks.find((t) => t.id.toString() === taskId);
-
-    // Only update the database if we ACTUALLY moved it to a new quadrant
-    if (draggedTask && draggedTask.quadrant !== newQuadrant) {
-      updateTask(taskId, { ...draggedTask, quadrant: newQuadrant });
-    }
-    setActiveId(null); // Hide the ghost when the drop ends
-  };
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
 
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <div className="max-w-[1800px] mx-auto px-4 py-8 h-[calc(100vh-80px)] flex flex-col">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
@@ -130,7 +167,12 @@ export default function Matrix() {
                 {tasks
                   .filter((t) => !t.quadrant || t.quadrant === "TODO_POOL")
                   .map((task) => (
-                    <DraggableTask key={task.id} task={task} />
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      draggable={true}
+                      onStatusChange={handleStatusChange}
+                    />
                   ))}
               </DroppableQuadrant>
             )}
@@ -150,7 +192,12 @@ export default function Matrix() {
                 {tasks
                   .filter((t) => t.quadrant === "URGENT_IMPORTANT")
                   .map((task) => (
-                    <DraggableTask key={task.id} task={task} />
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      draggable={true}
+                      onStatusChange={handleStatusChange}
+                    />
                   ))}
               </div>
             </DroppableQuadrant>
@@ -167,7 +214,12 @@ export default function Matrix() {
                 {tasks
                   .filter((t) => t.quadrant === "NOT_URGENT_IMPORTANT")
                   .map((task) => (
-                    <DraggableTask key={task.id} task={task} />
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      draggable={true}
+                      onStatusChange={handleStatusChange}
+                    />
                   ))}
               </div>
             </DroppableQuadrant>
@@ -184,7 +236,12 @@ export default function Matrix() {
                 {tasks
                   .filter((t) => t.quadrant === "URGENT_NOT_IMPORTANT")
                   .map((task) => (
-                    <DraggableTask key={task.id} task={task} />
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      draggable={true}
+                      onStatusChange={handleStatusChange}
+                    />
                   ))}
               </div>
             </DroppableQuadrant>
@@ -201,7 +258,12 @@ export default function Matrix() {
                 {tasks
                   .filter((t) => t.quadrant === "NOT_URGENT_NOT_IMPORTANT")
                   .map((task) => (
-                    <DraggableTask key={task.id} task={task} />
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      draggable={true}
+                      onStatusChange={handleStatusChange}
+                    />
                   ))}
               </div>
             </DroppableQuadrant>
@@ -212,8 +274,10 @@ export default function Matrix() {
       {/* The Ghost that floats above everything */}
       <DragOverlay>
         {activeId ? (
-          <DraggableTask
+          <TaskCard
             task={tasks.find((t) => t.id.toString() === activeId)!}
+            draggable={true}
+            onStatusChange={handleStatusChange}
           />
         ) : null}
       </DragOverlay>

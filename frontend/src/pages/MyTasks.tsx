@@ -1,17 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
-import copyIcon from "../assets/copy.svg";
-import deleteIcon from "../assets/delete.svg";
-import editIcon from "../assets/edit.svg";
-
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-  dueDate: string;
-}
+import { TaskCard } from "../components/Matrix-Components";
+import type { Task } from "../components/Matrix-Components";
 
 export default function MyTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -19,7 +10,7 @@ export default function MyTasks() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDuedate] = useState("");
-  const [status, setStatus] = useState("TODO");
+  const [status, setStatus] = useState<Task["status"]>("TODO");
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const isEditMode = editingTaskId !== null;
@@ -199,88 +190,14 @@ export default function MyTasks() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto flex-1 p-1">
           {tasks.map((task) => (
-            <div
+            <TaskCard
               key={task.id}
-              className="h-56 group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 border-t-4 border-t-indigo-500 transition-all duration-200 flex flex-col"
-            >
-              <div className="flex justify-between items-start mb-2 ">
-                <h3
-                  className="text-lg font-bold text-gray-800 line-clamp-1 pr-4"
-                  title={task.title}
-                >
-                  {task.title}
-                </h3>
-
-                {/* Icons only show when hovering over the card for a cleaner look */}
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mt-1 -mr-2 shrink-0">
-                  <button
-                    aria-label="Copy item"
-                    className="p-2 text-gray-400 hover:bg-indigo-50 rounded-xl transition-colors cursor-pointer"
-                  >
-                    <img
-                      src={copyIcon}
-                      alt="copy"
-                      className="w-4 h-4 opacity-70"
-                    />
-                  </button>
-                  <button
-                    aria-label="Edit item"
-                    className="p-2 text-gray-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
-                    onClick={() => openEditModal(task)}
-                  >
-                    <img
-                      src={editIcon}
-                      alt="edit"
-                      className="w-4 h-4 opacity-70"
-                    />
-                  </button>
-                  <button
-                    aria-label="Delete item"
-                    className="p-2 text-gray-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
-                    onClick={() => handleDeleteTask(task.id)}
-                  >
-                    <img
-                      src={deleteIcon}
-                      alt="delete"
-                      className="w-4 h-4 opacity-70"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <p
-                className="text-gray-500 text-sm mb-6 flex-grow line-clamp-2 leading-relaxed"
-                title={task.description}
-              >
-                {task.description}
-              </p>
-
-              {/* Status and Due Date footer */}
-              <div className="flex flex-wrap gap-2 items-center mt-auto pt-4 border-t border-gray-50">
-                <button
-                  className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-wide cursor-pointer hover:bg-indigo-100 transition-colors"
-                  onClick={() => handleStatusChange(task.id)}
-                >
-                  {task.status}
-                </button>
-                <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1.5 border border-gray-200">
-                  <svg
-                    className="w-3.5 h-3.5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    ></path>
-                  </svg>
-                  {task.dueDate}
-                </span>
-              </div>
-            </div>
+              task={task}
+              draggable={false}
+              onStatusChange={handleStatusChange}
+              onEdit={openEditModal}
+              onDelete={handleDeleteTask}
+            />
           ))}
         </div>
       )}
